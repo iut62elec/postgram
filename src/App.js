@@ -1,23 +1,35 @@
-import logo from './logo.svg';
 import './App.css';
+import React, {useState, useEffect, useRef} from 'react';
+import {Amplify, API, graphqlOperation} from 'aws-amplify'
+import { Flex, View, Heading, MapView, Text, Image,  withAuthenticator,AmplifyS3Image } from '@aws-amplify/ui-react';
+import config from './aws-exports'
+import { listPosts } from './graphql/queries'
+Amplify.configure(config)
+
+
+
+
 
 function App() {
+  const [posts, setPosts] = useState ([]);
+  useEffect(()=>{
+    API.graphql(graphqlOperation(listPosts))
+    .then(response => setPosts(response.data.listPosts.items))
+    .then(error => console.log(error))
+  },[]);
+
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Hello World</h1>
+      {
+        posts.map(post => (
+          <div key={post.id}>
+            <h3>{post.name}</h3>
+            <p>{post.location}</p>
+          </div>
+        ))
+      }
     </div>
   );
 }
