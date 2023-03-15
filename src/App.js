@@ -9,11 +9,12 @@ import React, {useState, useEffect, useRef} from 'react';
 import {Amplify, API, Auth, graphqlOperation, Storage} from 'aws-amplify'
 import { Flex, View, Heading, MapView, Text, Image,  withAuthenticator, AmplifyS3Image } from '@aws-amplify/ui-react';
 import config from './aws-exports'
-import { listPosts } from './graphql/queries'
+import { listPosts, getPost } from './graphql/queries'
 import CreatePost from './CreatePost';
 import { Link } from 'react-router-dom';
 import { css } from '@emotion/css';
 import Post from './Post';
+import { deletePost } from './graphql/mutations';
 
 
 Amplify.configure(config)
@@ -72,6 +73,32 @@ async function fetchPosts() {
 async function setPostState(postsArray) {
   updatePosts(postsArray);
 }
+
+  
+async function deletePost(id) {
+  
+  
+      //console.log(id)
+      //let postData = await API.graphql({ query: getPost, variables: { input: {id: "8fb6755f-01d0-4385-9002-0e9158efbc9c"}}});
+
+      // const deletePost1 = await API.graphql({query: deletePost, variables: { input: {id: id}}});
+      API.graphql(graphqlOperation(`mutation MyMutation {
+        deletePost(input: {id: "${id}" }) {
+          id
+        }
+      }`))
+      .then(response => setPosts_ped(response.data))
+      .then(error => console.log(error))
+    
+      fetchPosts()
+  
+  // catch (err) {
+  //     console.log('error: ', err);
+  //     }        
+
+  }
+  // 
+
 const imageStyle = css`
   width: 100%;
   max-width: 400px;
@@ -101,32 +128,40 @@ const linkStyle = css`
       <HashRouter>
 
 
-    <div>
-      <h1>Hello World</h1>
-      <button onClick={() => updateOverlayVisibility(true)}>New Post</button>
-      <Switch>  
-        <Route exact path="/" >
-        {
-          posts.map(post => (
-            <Link to={`/post/${post.id}`} className={linkStyle} key={post.id}>
-            <div key={post.id} className={postContainer} >
-              <h3 className={postTitleStyle}>{post.name} </h3>
-              <p>{post.location}</p>
-              <img alt="post" className={imageStyle}  src={post.image} />
-            </div>
-            </Link>
-          ))
-        }
-        </Route>
-        <Route path="/post/:id" >
-                <Post />
-        </Route>
+          <div>
+            <h1>Hello World</h1>
+            <button onClick={() => updateOverlayVisibility(true)}>New Post</button>
+            <p></p>
 
-       </Switch>
-      </div>
-      <button onClick={signOut}>Sign Out</button>
+            <Switch>  
+              <Route exact path="/" >
+              {
+                posts.map(post => (
+                  <>
+                  
+                  <button onClick={() =>deletePost(post.id)} > Delete {post.name} </button>
+                  <Link to={`/post/${post.id}`} className={linkStyle} key={post.id}>
+                  
+                    <div key={post.id} className={postContainer} >
+                      <h3 className={postTitleStyle}>{post.name} </h3>
+                      <p>{post.location}</p>
+                      <img alt="post" className={imageStyle}  src={post.image} />
+                    </div>
+                  </Link>
+                  </>
+                  
+                ))
+              }
+              </Route>
+              <Route path="/post/:id"  component ={Post} />
+              
+
+            </Switch>
+            </div>
+        <button onClick={signOut}>Sign Out</button>
  
       </HashRouter>
+      
       {showOverlay && (
       <CreatePost
             updateOverlayVisibility={updateOverlayVisibility}

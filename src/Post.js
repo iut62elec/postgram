@@ -6,6 +6,8 @@ import { useParams } from 'react-router-dom';
 import { API, Storage } from 'aws-amplify';
 import { getPost } from './graphql/queries';
 
+import Button from './Button';
+
 export default function Post() {
   const [loading, updateLoading] = useState(true);
   const [post, updatePost] = useState(null);
@@ -13,6 +15,10 @@ export default function Post() {
   useEffect(() => {
     fetchPost()
   }, [])
+
+  
+
+    
   async function fetchPost() {
     try {
       const postData = await API.graphql({
@@ -32,10 +38,15 @@ export default function Post() {
   console.log('post: ', post)
   return (
     <>
-      <h1 className={titleStyle}>{post.name}</h1>
-      <h3 className={locationStyle}>{post.location}</h3>
-      <p>{post.description}</p>
-      <img alt="post" src={post.image} className={imageStyle} />
+      <div key={post.id} className={postContainer} ></div>  
+        <h1 className={titleStyle}>{post.name}</h1>
+        <h3 className={locationStyle}>{post.location}</h3>
+        <p>{post.description}</p>
+        <img alt="post" src={post.image} className={imageStyle} />
+      <div/>
+      <p></p>
+
+      <p></p>
     </>
   )
 }
@@ -55,3 +66,12 @@ const imageStyle = css`
     width: 100%;
   }
 `
+const postContainer = css`
+  border-radius: 10px;
+  padding: 1px 20px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+  \:hover {
+    border-color: #0070f3;
+  }
+`  
