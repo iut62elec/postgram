@@ -13,6 +13,7 @@ import { listPosts } from './graphql/queries'
 import CreatePost from './CreatePost';
 import { Link } from 'react-router-dom';
 import { css } from '@emotion/css';
+import Post from './Post';
 
 
 Amplify.configure(config)
@@ -51,7 +52,6 @@ function Router({ signOut, user }) {
     }, []);
 
     
-
 async function fetchPosts() {
 
   /* query the API, ask for 100 items */
@@ -90,25 +90,43 @@ const postTitleStyle = css`
   margin: 15px 0px;
   color: #0070f3;
 `
+const linkStyle = css`
+  text-decoration: none;
+`
+//const id ="017141f1-48d7-4ba7-b382-49b584956259"
 
   return (
+
+    <>
+      <HashRouter>
+
+
     <div>
       <h1>Hello World</h1>
-      {
-        posts.map(post_ped => (
-          <div key={post_ped.id} className={postContainer} >
-            <h3 className={postTitleStyle}>{post_ped.name} </h3>
-            <p>{post_ped.location}</p>
-            <img alt="post" className={imageStyle}  src={post_ped.image} />
-          </div>
-        ))
-      }
-      <button onClick={signOut}>Sign Out</button>
-
-      <h1>Hello World</h1>
       <button onClick={() => updateOverlayVisibility(true)}>New Post</button>
+      <Switch>  
+        <Route exact path="/" >
+        {
+          posts.map(post => (
+            <Link to={`/post/${post.id}`} className={linkStyle} key={post.id}>
+            <div key={post.id} className={postContainer} >
+              <h3 className={postTitleStyle}>{post.name} </h3>
+              <p>{post.location}</p>
+              <img alt="post" className={imageStyle}  src={post.image} />
+            </div>
+            </Link>
+          ))
+        }
+        </Route>
+        <Route path="/post/:id" >
+                <Post />
+        </Route>
 
-
+       </Switch>
+      </div>
+      <button onClick={signOut}>Sign Out</button>
+ 
+      </HashRouter>
       {showOverlay && (
       <CreatePost
             updateOverlayVisibility={updateOverlayVisibility}
@@ -117,7 +135,8 @@ const postTitleStyle = css`
       />
       )}
       
-    </div>
+    
+    </>
   );
 }
 
