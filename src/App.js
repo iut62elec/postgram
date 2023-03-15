@@ -76,14 +76,28 @@ const imageStyle = css`
   width: 100%;
   max-width: 400px;
 `
-  
+const postContainer = css`
+  border-radius: 10px;
+  padding: 1px 20px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+  \:hover {
+    border-color: #0070f3;
+  }
+`  
+
+const postTitleStyle = css`
+  margin: 15px 0px;
+  color: #0070f3;
+`
+
   return (
     <div>
       <h1>Hello World</h1>
       {
         posts.map(post_ped => (
-          <div key={post_ped.id}>
-            <h3>{post_ped.name}</h3>
+          <div key={post_ped.id} className={postContainer} >
+            <h3 className={postTitleStyle}>{post_ped.name} </h3>
             <p>{post_ped.location}</p>
             <img alt="post" className={imageStyle}  src={post_ped.image} />
           </div>
